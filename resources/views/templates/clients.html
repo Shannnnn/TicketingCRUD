@@ -1,0 +1,246 @@
+<div class="row">
+    <div class="col-lg-12 margin-tb">
+        <div class="pull-left">
+            <h1>Client Management</h1>
+        </div>
+        <div class="pull-right" style="padding-top:30px">
+            <div class="box-tools" style="display:inline-table">
+              <div class="input-group">
+                  <input type="text" class="form-control input-sm ng-valid ng-dirty" placeholder="Search" ng-change="searchDB()" ng-model="searchText" name="table_search" title="" tooltip="" data-original-title="Min character length is 3">
+                  <span class="input-group-addon">Search</span>
+              </div>
+            </div>
+            <button class="btn btn-success" data-toggle="modal" data-target="#create-user">Create New Client</button>
+        </div>
+    </div>
+</div>
+
+
+<table class="table table-bordered pagin-table">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Company Name</th>
+            <th>Branch</th>
+            <th>Address</th>
+            <th width="310px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr dir-paginate="value in data | clientsPerPage:5" total-clients="totalClients">
+            <td>{{ $index + 1 }}</td>
+            <td>{{ value.company_name }}</td>
+            <td>{{ value.branch }}</td>
+            <td>{{ value.address }}</td>
+            <td>
+            <button data-toggle="modal" ng-click="show(value.id)" data-target="#show-data" class="btn btn-primary">Show</button>
+            <button data-toggle="modal" ng-click="add(value.id)" data-target="#add-contact" class="btn btn-success">Add Contact</button>
+            <button data-toggle="modal" ng-click="edit(value.id)" data-target="#edit-data" class="btn btn-info">Edit</button>
+            <button ng-click="remove(value,$index)" class="btn btn-danger">Delete</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)" template-url="templates/dirPagination.html" ></dir-pagination-controls>
+
+<!-- Create Modal -->
+<div class="modal fade" id="create-user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST" name="addClient" role="form" ng-submit="saveAdd()">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Create Client</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <strong>Company Name: </strong>
+                            <div class="form-group">
+                                <input ng-model="form.company_name" type="text" placeholder="Company Name" name="company_name" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <strong>Branch: </strong>
+                            <div class="form-group">
+                                <input ng-model="form.branch" type="text" placeholder="Branch" name="branch" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <strong>Address: </strong>
+                            <div class="form-group">
+                                <input ng-model="form.address" type="text" placeholder="Address" name="address" class="form-control" required />
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" ng-disabled="addClient.$invalid" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="edit-data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST" name="editClient" role="form" ng-submit="saveEdit()">
+                <input ng-model="form.id" type="hidden" placeholder="Name" name="name" class="form-control" />
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Edit Client</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Company Name: </strong>
+                                <input ng-model="form.company_name" type="text" placeholder="Company Name" name="company_name" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Branch: </strong>
+                                <input ng-model="form.branch" type="text" placeholder="Branch" name="branch" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Address: </strong>
+                                <input ng-model="form.address" type="text" placeholder="Address" name="address" class="form-control" required />
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" ng-disabled="editClient.$invalid" class="btn btn-primary create-crud">Submit</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Add Contact Modal -->
+<div class="modal fade" id="add-contact" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST" name="addContact" role="form" ng-submit="saveAddContact()">
+                <input ng-model="form.id" type="hidden" placeholder="Name" name="name" class="form-control" />
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add Contact</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Contact Name: </strong>
+                                <input ng-model="form.contact_name" type="text" placeholder="Contact Name" name="contact_name" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Contact Number: </strong>
+                                <input ng-model="form.contact_number" type="text" placeholder="Contact Number" name="contact_number" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Email: </strong>
+                                <input ng-model="form.email" type="text" placeholder="Email" name="email" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Label: </strong>
+                                <input ng-model="form.label" type="text" placeholder="Label" name="label" class="form-control" required />
+                            </div>
+                        </div>
+                        <input type="hidden" ng-model="form.currentClient">
+                    </div>
+                    <br><button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" ng-disabled="addContact.$invalid" class="btn btn-primary create-crud">Add</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Show Modal -->
+<div class="modal fade" id="show-data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST" name="showClient" role="form">
+                <input ng-model="form.id" type="hidden" placeholder="Name" name="name" class="form-control" />
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Client Details (Client #{{ form.id }})</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Company Name:</strong>
+                                {{ form.company_name }}
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Branch:</strong>
+                                {{ form.branch }}
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-8">
+                            <div class="form-group">
+                                <strong>Address:</strong>
+                                {{ form.address }}
+                            </div>
+                        </div>
+                    </div>
+                    <h4><strong><u>Contact List</u></strong></h4>
+
+                    <table class="table table-hover table-managed table-striped">
+                        <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Contact Name</th>
+                            <th>Contact Number</th>
+                            <th>Email</th>
+                            <th>Label</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="contact in contacts" ng-show="contact.client_id == form.id">
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ contact.contact_name }}</td>
+                            <td>{{ contact.contact_number }}</td>
+                            <td>{{ contact.email }}</td>
+                            <td>{{ contact.label }}</td>
+                            <td><button ng-click="removeContact(contact,$index)" class="btn btn-danger">Delete</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-toggle="modal" ng-click="add(form.id)" data-target="#add-contact" data-dismiss="modal" class="btn btn-success pull-left">Add Contact</button>
+                <button data-toggle="modal" ng-click="edit(form.id)" data-target="#edit-data" data-dismiss="modal" class="btn btn-info">Edit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
